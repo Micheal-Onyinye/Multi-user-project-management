@@ -94,3 +94,11 @@ def add_member(
         "role": member.role
     }
 
+
+@router.get("/organizations/{org_id}")
+def get_organization(
+    org_id: int,
+    membership = Depends(require_org_role(["Admin", "Member"])),
+    db: Session = Depends(get_db),
+):
+    return {"organization_id": org_id}
