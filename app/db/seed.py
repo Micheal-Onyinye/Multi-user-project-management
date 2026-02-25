@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.role import Role
+from app.db.database import get_db
 
 def seed_roles(db: Session):
     roles = ["Admin", "Member", "Viewer"]
@@ -10,3 +11,7 @@ def seed_roles(db: Session):
             db.add(Role(name=role_name))
 
     db.commit()
+
+
+
+
