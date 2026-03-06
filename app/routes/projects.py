@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.models import Project
+from app.models.model import Project
 from app.schemas.project import ProjectCreate
 from app.core.permissions import require_org_role
 

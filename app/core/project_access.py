@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from app.models import Project
+from app.models.model import Project
 
 def get_project_or_404(
     db: Session,

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.role import Role
+from app.models.model import Role
 from app.db.database import get_db
 
 def seed_roles(db: Session):

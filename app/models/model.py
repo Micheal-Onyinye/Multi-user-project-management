@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
 from sqlalchemy.orm import relationship
-from .database import Base
+from app.db.database import Base
 from datetime import datetime
 import enum
 
@@ -63,13 +63,13 @@ class OrganizationMember(Base):
     id = Column(Integer, primary_key=True, index=True)
     organization_id = Column(Integer, ForeignKey("organizations.id"))
     user_id = Column(Integer, ForeignKey("users.id"))
-    role = Column(String)
+    role_id = Column(Integer, ForeignKey("roles.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
     organization = relationship("Organization", back_populates="members")
     user = relationship("User", back_populates="memberships")
-    roles = relationship("Role", back_populates="organization_member")
+    role = relationship("Role", back_populates="members")
 
 
 class Role(Base):
@@ -81,7 +81,7 @@ class Role(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
-    members = relationship("OrganizationMember", back_populates="roles")
+    members = relationship("OrganizationMember", back_populates="role")
 
 
 class Project(Base):

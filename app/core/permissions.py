@@ -1,9 +1,9 @@
 from fastapi import HTTPException, status, Depends
 from sqlalchemy.orm import Session
-from app.models import OrganizationMember
+from app.models.model import OrganizationMember,User
 from app.db.database import get_db
-from app.core.dependencies import get_current_user
-from app.models import User
+from app.core.auth import get_current_user
+
 
 def require_org_admin(
     db: Session,

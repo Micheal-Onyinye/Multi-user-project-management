@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.models import Task
-from app.schemas.task import TaskCreate, TaskUpdate
+from app.models.model import Task
+from app.schemas.task import TaskCreate, TaskUpdate, TaskStatusUpdate
 from app.core.permissions import require_org_role
 from app.core.project_access import get_project_or_404
 

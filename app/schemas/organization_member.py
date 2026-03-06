@@ -1,4 +1,6 @@
 from pydantic import BaseModel, Field, EmailStr
+
+class AddMemberSchema(BaseModel):    
     email: EmailStr
     role: str = Field(..., example="member")
 
@@ -8,5 +10,6 @@ class OrganizationMemberResponse(BaseModel):
     user_id: int
     role: str
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }

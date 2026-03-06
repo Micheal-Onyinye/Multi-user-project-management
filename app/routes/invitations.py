@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from datetime import datetime
 from app.db.database import get_db
-from app.models import Invitation, OrganizationMember, User
+from app.models.model import Invitation, OrganizationMember, User
 from app.schemas.invitation import InviteUserSchema, InvitationResponse
 from app.core.auth import get_current_user
 from app.core.permissions import require_org_admin
