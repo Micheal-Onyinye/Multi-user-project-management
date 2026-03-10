@@ -25,7 +25,9 @@ def signup(user_data: UserCreate, db: Session = Depends(get_db)):
     )
     db.add(new_user)
     db.commit()
+    print("Commit done, user id:", new_user.id)
     db.refresh(new_user)
+
 
     # 3. Return Token
     token = create_access_token({"sub": new_user.email})
@@ -35,12 +37,13 @@ def signup(user_data: UserCreate, db: Session = Depends(get_db)):
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == form_data.username).first()
     
+
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="Invalid credentials"
         )
-    
+
     token = create_access_token({"sub": user.email})
     return {"access_token": token, "token_type": "bearer", "message": "Login successful!"}
 

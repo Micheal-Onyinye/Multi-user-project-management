@@ -5,7 +5,6 @@ from app.db.database import Base, engine
 
 app = FastAPI(title="Multi-Tenant Project Management API")
 
-Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)

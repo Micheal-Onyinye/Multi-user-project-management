@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.models.model import Organization, OrganizationMember, User
+from app.models.model import Organization, OrganizationMember, User, Role
 from app.schemas.organization import OrganizationCreate, OrganizationResponse
 from app.core.auth import get_current_user
 from app.schemas.organization_member import AddMemberSchema, OrganizationMemberResponse
@@ -17,11 +17,8 @@ def create_organization(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-   
-    existing = db.query(Organization).filter(
-        Organization.name == org_data.name
-    ).first()
-
+    # 1. Check if organization name already exists
+    existing = db.query(Organization).filter(Organization.name == org_data.name).first()
     if existing:
         raise HTTPException(
             status_code=400,
@@ -37,14 +34,23 @@ def create_organization(
     db.commit()
     db.refresh(organization)
 
-    # 3. Creator becomes admin
+    # 3. Ensure 'admin' role exists
+    admin_role = db.query(Role).filter(Role.name == "admin").first()
+    if not admin_role:
+        admin_role = Role(name="admin", description="Organization administrator")
+        db.add(admin_role)
+        db.commit()
+        db.refresh(admin_role)
+
+    # 4. Assign creator as admin
     membership = OrganizationMember(
         organization_id=organization.id,
         user_id=current_user.id,
-        role="admin"
+        role_id=admin_role.id
     )
     db.add(membership)
     db.commit()
+    db.refresh(membership)
 
     return organization
 
@@ -79,11 +85,17 @@ def add_member(
             detail="User already belongs to this organization"
         )
 
-    # 4. Add member
+    role = db.query(Role).filter(Role.name == data.role).first()
+    if not role:
+            raise HTTPException(
+        status_code=400,
+        detail=f"Role '{data.role}' does not exist"
+    )
+
     member = OrganizationMember(
         organization_id=organization_id,
         user_id=user.id,
-        role=data.role
+        role=role  # now this is a Role object
     )
     db.add(member)
     db.commit()

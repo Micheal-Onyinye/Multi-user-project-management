@@ -15,12 +15,11 @@ def require_org_admin(
         OrganizationMember.user_id == user_id
     ).first()
 
-    if not membership or membership.role != "admin":
+    if not membership or membership.role.name != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin privileges required"
         )
-
 
 
 
@@ -45,10 +44,10 @@ def require_org_role(required_roles: list[str]):
                 detail="You are not a member of this organization"
             )
 
-        if membership.role not in required_roles:
+        if membership.role.name !="admin":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Insufficient permissions"
+                detail="Admin privileges required"
             )
 
         return membership
