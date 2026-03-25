@@ -26,7 +26,7 @@ Each organization can:
 ## Architecture
 
 The project follows a layered architecture:
-
+```
 MULTI-TENANT 
 │
 ├── app
@@ -66,7 +66,7 @@ MULTI-TENANT
 ├── .env
 ├── .gitignore
 └── README.md
-
+```
 
 ## Features
 
