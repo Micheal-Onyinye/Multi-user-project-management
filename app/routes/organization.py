@@ -103,7 +103,7 @@ def add_member(
 
     return {
         "user_email": user.email,
-        "role": member.role
+        "role": role.name
     }
 
 
@@ -114,3 +114,26 @@ def get_organization(
     db: Session = Depends(get_db),
 ):
     return {"organization_id": org_id}
+
+@router.get("/{organization_id}/members")
+def get_members(
+    organization_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    members = (
+        db.query(OrganizationMember)
+        .join(User)
+        .join(Role)
+        .filter(OrganizationMember.organization_id == organization_id)
+        .all()
+    )
+
+    return [
+        {
+            "name": m.user.name,
+            "email": m.user.email,
+            "role": m.role.name
+        }
+        for m in members
+    ]

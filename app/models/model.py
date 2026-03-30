@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 from app.db.database import Base
-from datetime import datetime
+from datetime import datetime, timezone
 import enum
 
 
@@ -20,7 +20,7 @@ class Invitation(Base):
     email = Column(String, index=True, nullable=False)
     role = Column(String, nullable=False)
     status = Column(Enum(InvitationStatus), default=InvitationStatus.pending)
-    sent_at = Column(DateTime, default=datetime.utcnow)
+    sent_at = Column(DateTime, default=datetime.now(timezone.utc))
     responded_at = Column(DateTime, nullable=True)
 
     organization = relationship("Organization", back_populates="invitations")
@@ -34,7 +34,7 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     password_hash = Column(String, nullable=False)
     is_active = Column(Integer, default=1)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
 
     # Relationships
     organizations = relationship("Organization", back_populates="owner")
@@ -48,7 +48,7 @@ class Organization(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
 
     # Relationships
     owner = relationship("User", back_populates="organizations")
@@ -64,7 +64,7 @@ class OrganizationMember(Base):
     organization_id = Column(Integer, ForeignKey("organizations.id"))
     user_id = Column(Integer, ForeignKey("users.id"))
     role_id = Column(Integer, ForeignKey("roles.id"))
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
 
     # Relationships
     organization = relationship("Organization", back_populates="members")
@@ -78,7 +78,7 @@ class Role(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
     description = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
 
     # Relationships
     members = relationship("OrganizationMember", back_populates="role")
@@ -91,7 +91,7 @@ class Project(Base):
     name = Column(String, index=True)
     description = Column(String, nullable=True)
     organization_id = Column(Integer, ForeignKey("organizations.id"))
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
 
     # Relationships
     organization = relationship("Organization", back_populates="projects")
@@ -106,7 +106,9 @@ class Task(Base):
     description = Column(String, nullable=True)
     project_id = Column(Integer, ForeignKey("projects.id"))
     assignee_id = Column(Integer, ForeignKey("users.id"))
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    status = Column(String, default="pending")  # pending, in_progress, completed, overdue
+    due_date = Column(DateTime, nullable=True)
 
     # Relationships
     project = relationship("Project", back_populates="tasks")

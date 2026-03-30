@@ -135,7 +135,7 @@ SECRET_KEY=your_secret_key
 
 ### 4. Run the server
 
-uvicorn app.main:app --reload
+uvicorn main:app --reload
 
 ## API Example Flows
 

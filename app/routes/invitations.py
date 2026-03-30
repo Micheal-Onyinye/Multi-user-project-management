@@ -2,10 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from datetime import datetime
 from app.db.database import get_db
-from app.models.model import Invitation, OrganizationMember, User, Role
+from app.models.model import Invitation, OrganizationMember, User, Role, Organization
 from app.schemas.invitation import InviteUserSchema, InvitationResponse
 from app.core.auth import get_current_user
 from app.core.permissions import require_org_admin
+from app.core.notify import create_notification
 
 router = APIRouter(prefix="/invitations", tags=["invitations"])
 
@@ -16,6 +17,7 @@ def invite_user(
     data: InviteUserSchema,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
+    
 ):
     # 1. Admin check
     require_org_admin(db, organization_id, current_user.id)
@@ -51,6 +53,12 @@ def invite_user(
         email=data.email,
         role=data.role
     )
+
+    create_notification(
+        db=db,
+        user_id=current_user.id,
+        message=f"You were added to organization '{Organization.name}'"
+   )
 
     db.add(invite)
     db.commit()

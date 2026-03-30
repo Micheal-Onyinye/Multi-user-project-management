@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routes import auth, organization, invitations, tasks, projects, activities
+from app.routes import auth, organization, invitations, tasks, projects, activities, notifications
 from app.db.database import Base, engine
 
 app = FastAPI(title="Multi-Tenant Project Management API")
@@ -17,6 +17,8 @@ app.include_router(tasks.router)
 app.include_router(projects.router)
 
 app.include_router(activities.router)
+
+app.include_router(notifications.router)
 
 if __name__ == "__main__":
     import uvicorn
